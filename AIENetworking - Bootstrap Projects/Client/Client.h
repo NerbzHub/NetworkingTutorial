@@ -17,8 +17,8 @@ public:
 	virtual void draw();
 
 	// Initialize the connection 
-	void handleNetworkConnection(); 
-	void initaliseClientConnection(); 
+	void handleNetworkConnection();
+	void initaliseClientConnection();
 
 	// Handle incoming packets 
 	void handleNetworkMessages();
@@ -26,7 +26,7 @@ public:
 protected:
 
 	RakNet::RakPeerInterface* m_pPeerInterface;
-	const char* IP = "127.0.0.1"; 
+	const char* IP = "127.0.0.1";
 	const unsigned short PORT = 5456;
 	glm::mat4	m_viewMatrix;
 	glm::mat4	m_projectionMatrix;
