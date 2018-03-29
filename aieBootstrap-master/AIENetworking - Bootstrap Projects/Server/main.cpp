@@ -1,10 +1,12 @@
 #include <iostream>
 #include <string>
-#include <cstdio> // used for gets
-
+//#include <cstdio> // used for gets
+#include <thread>
+#include <chrono>
 #include <RakPeerInterface.h>
 #include <MessageIdentifiers.h>
 #include <BitStream.h>
+#include "GameMessages.h"
 
 void handleNetworkMessages(RakNet::RakPeerInterface* pPeerInterface);
 
@@ -27,6 +29,9 @@ int main()
 	pPeerInterface->SetMaximumIncomingConnections(32);
 
 	handleNetworkMessages(pPeerInterface);
+
+	// Startup a thread to ping clients every second.
+	std::thread pingThread(sendClientPing, pPeerInterface);
 
 	return 0;
 }
