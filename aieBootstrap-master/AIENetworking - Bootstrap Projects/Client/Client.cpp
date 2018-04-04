@@ -60,7 +60,7 @@ void Client::update(float deltaTime) {
 	aie::Input* input = aie::Input::getInstance();
 
 	// WASD controls
-	if (input->isKeyDown(aie::INPUT_KEY_W))
+	/*if (input->isKeyDown(aie::INPUT_KEY_W))
 	{
 		m_myGameObject.position.y += 10.0f * deltaTime;
 		sendClientGameObject();
@@ -79,7 +79,10 @@ void Client::update(float deltaTime) {
 	{
 		m_myGameObject.position.x += 10.0f * deltaTime;
 		sendClientGameObject();
-	}
+	}*/
+
+
+	//sendClientGameObject();
 	
 	draw();
 
@@ -191,12 +194,17 @@ void Client::onSetClientIDPacket(RakNet::Packet* packet)
 	std::cout << "Set my client ID to: " << m_myClientID << std::endl;
 }
 
-void Client::sendClientGameObject()
+// send 3 floats in
+// instead of gameobject, use the three floats
+void Client::sendClientGameObject(float posX, float posY, float posZ)
 {
 	RakNet::BitStream bs;
 	bs.Write((RakNet::MessageID)GameMessages::ID_CLIENT_CLIENT_DATA);
 	bs.Write(m_myClientID);
-	bs.Write((char*)&m_myGameObject, sizeof(GameObject));
+	//bs.Write((char*)&m_myGameObject, sizeof(GameObject));
+	bs.Write((char*)&posX, sizeof(float));
+	bs.Write((char*)&posY, sizeof(float));
+	bs.Write((char*)&posZ, sizeof(float));
 
 	m_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED,
 							0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);

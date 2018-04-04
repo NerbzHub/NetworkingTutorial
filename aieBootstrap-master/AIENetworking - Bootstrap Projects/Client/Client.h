@@ -42,7 +42,7 @@ public:
 
 	void onSetClientIDPacket(RakNet::Packet * packet);
 
-	void sendClientGameObject();
+	void sendClientGameObject(float posX, float posY, float posZ);
 
 	void onReceivedClientDataPacket(RakNet::Packet * packet);
 
