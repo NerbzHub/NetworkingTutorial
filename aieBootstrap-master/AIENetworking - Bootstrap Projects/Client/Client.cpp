@@ -20,6 +20,10 @@ Client::~Client() {
 
 bool Client::startup() {
 
+	
+	m_myGameObject.position = glm::vec3(0, 0, 0);
+	m_myGameObject.colour = glm::vec4(1, 0, 0, 1);
+
 	setBackgroundColour(0.25f, 0.25f, 0.25f);
 
 	// initialise gizmo primitive counts
@@ -31,13 +35,14 @@ bool Client::startup() {
 		getWindowWidth() / (float)getWindowHeight(),
 		0.1f, 1000.f);
 
+
 	handleNetworkConnection();
 
 	return true;
 }
 
-void Client::shutdown() {
-
+void Client::shutdown()
+{
 	Gizmos::destroy();
 }
 
@@ -51,9 +56,34 @@ void Client::update(float deltaTime) {
 
 	handleNetworkMessages();
 
-	// quit if we press escape
+	// Allow for input
 	aie::Input* input = aie::Input::getInstance();
 
+	// WASD controls
+	if (input->isKeyDown(aie::INPUT_KEY_W))
+	{
+		m_myGameObject.position.y += 10.0f * deltaTime;
+		sendClientGameObject();
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_S))
+	{
+		m_myGameObject.position.y -= 10.0f * deltaTime;
+		sendClientGameObject();
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_A))
+	{
+		m_myGameObject.position.x -= 10.0f * deltaTime;
+		sendClientGameObject();
+	}
+	if (input->isKeyDown(aie::INPUT_KEY_D))
+	{
+		m_myGameObject.position.x += 10.0f * deltaTime;
+		sendClientGameObject();
+	}
+	
+	draw();
+
+	// quit if we press escape
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 }
@@ -67,6 +97,14 @@ void Client::draw() {
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
 		getWindowWidth() / (float)getWindowHeight(),
 		0.1f, 1000.f);
+
+	Gizmos::addSphere(m_myGameObject.position, 1.0f, 32, 32, m_myGameObject.colour);
+
+	for (auto& otherClient : m_otherClientGameObjects)
+	{
+		Gizmos::addSphere(otherClient.second.position,
+			1.0f, 32, 32, otherClient.second.colour);
+	}
 
 	Gizmos::draw(m_projectionMatrix * m_viewMatrix);
 }
@@ -131,9 +169,60 @@ void Client::handleNetworkMessages()
 		case ID_CONNECTION_LOST:
 			std::cout << "Connection lost.\n";
 			break;
+		case ID_SERVER_SET_CLIENT_ID:
+			onSetClientIDPacket(packet);
+			break;
+		case ID_CLIENT_CLIENT_DATA:
+			onReceivedClientDataPacket(packet);
+			break;
 		default:
 			std::cout << "Received a message with an unknown id:" << packet->data[0];
 			break;
 		}
+	}
+}
+
+void Client::onSetClientIDPacket(RakNet::Packet* packet)
+{
+	RakNet::BitStream bsIn(packet->data, packet->length, false);
+	bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+	bsIn.Read(m_myClientID);
+
+	std::cout << "Set my client ID to: " << m_myClientID << std::endl;
+}
+
+void Client::sendClientGameObject()
+{
+	RakNet::BitStream bs;
+	bs.Write((RakNet::MessageID)GameMessages::ID_CLIENT_CLIENT_DATA);
+	bs.Write(m_myClientID);
+	bs.Write((char*)&m_myGameObject, sizeof(GameObject));
+
+	m_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED,
+							0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+}
+
+void Client::onReceivedClientDataPacket(RakNet::Packet * packet)
+{
+	RakNet::BitStream bsIn(packet->data, packet->length, false);
+	bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+
+	int clientID;
+	bsIn.Read(clientID);
+
+	//If the clientID does not match our ID, we need to update
+	//our client GameObject information.
+	if (clientID != m_myClientID)
+	{
+		GameObject clientData;
+		bsIn.Read((char*)&clientData, sizeof(GameObject));
+
+		m_otherClientGameObjects[clientID] = clientData;
+
+		//For now, just output the Game Object information to the
+		//console
+		std::cout << "Client " << clientID <<
+			" at: " << clientData.position.x <<
+			" " << clientData.position.z << std::endl;
 	}
 }
