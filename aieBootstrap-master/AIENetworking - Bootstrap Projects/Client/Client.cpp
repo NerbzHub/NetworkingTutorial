@@ -11,6 +11,8 @@ using glm::vec4;
 using glm::mat4;
 using aie::Gizmos;
 
+//extern "C"
+//{
 Client::Client() {
 
 }
@@ -20,7 +22,7 @@ Client::~Client() {
 
 bool Client::startup() {
 
-	
+
 	m_myGameObject.position = glm::vec3(0, 0, 0);
 	m_myGameObject.colour = glm::vec4(1, 0, 0, 1);
 
@@ -30,7 +32,7 @@ bool Client::startup() {
 	Gizmos::create(10000, 10000, 10000, 10000);
 
 	// create simple camera transforms
-	m_viewMatrix = glm::lookAt(vec3(10), vec3(0), vec3(0, 1, 0));
+	m_viewMatrix = glm::lookAt(vec3(0, 10, 10), vec3(0), vec3(0, 1, 0));
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
 		getWindowWidth() / (float)getWindowHeight(),
 		0.1f, 1000.f);
@@ -60,7 +62,7 @@ void Client::update(float deltaTime) {
 	aie::Input* input = aie::Input::getInstance();
 
 	// WASD controls
-	/*if (input->isKeyDown(aie::INPUT_KEY_W))
+	if (input->isKeyDown(aie::INPUT_KEY_W))
 	{
 		m_myGameObject.position.y += 10.0f * deltaTime;
 		sendClientGameObject();
@@ -79,11 +81,11 @@ void Client::update(float deltaTime) {
 	{
 		m_myGameObject.position.x += 10.0f * deltaTime;
 		sendClientGameObject();
-	}*/
+	}
 
 
-	//sendClientGameObject();
-	
+	sendClientGameObject();
+
 	draw();
 
 	// quit if we press escape
@@ -100,13 +102,16 @@ void Client::draw() {
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
 		getWindowWidth() / (float)getWindowHeight(),
 		0.1f, 1000.f);
-
-	Gizmos::addSphere(m_myGameObject.position, 1.0f, 32, 32, m_myGameObject.colour);
+	m_projectionMatrix = glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, 1.0f, 100.0f);
+	//Gizmos::addSphere(m_myGameObject.position, 1.0f, 32, 32, m_myGameObject.colour);
+	Gizmos::add2DAABBFilled(m_myGameObject.position, glm::vec2(32, 32), m_myGameObject.colour);
 
 	for (auto& otherClient : m_otherClientGameObjects)
 	{
-		Gizmos::addSphere(otherClient.second.position,
-			1.0f, 32, 32, otherClient.second.colour);
+		/*Gizmos::addSphere(otherClient.second.position,
+			1.0f, 32, 32, otherClient.second.colour);*/
+		Gizmos::add2DAABBFilled(otherClient.second.position,
+			glm::vec2(32, 32), otherClient.second.colour);
 	}
 
 	Gizmos::draw(m_projectionMatrix * m_viewMatrix);
@@ -196,18 +201,18 @@ void Client::onSetClientIDPacket(RakNet::Packet* packet)
 
 // send 3 floats in
 // instead of gameobject, use the three floats
-void Client::sendClientGameObject(float posX, float posY, float posZ)
+void Client::sendClientGameObject()
 {
 	RakNet::BitStream bs;
 	bs.Write((RakNet::MessageID)GameMessages::ID_CLIENT_CLIENT_DATA);
 	bs.Write(m_myClientID);
-	//bs.Write((char*)&m_myGameObject, sizeof(GameObject));
-	bs.Write((char*)&posX, sizeof(float));
-	bs.Write((char*)&posY, sizeof(float));
-	bs.Write((char*)&posZ, sizeof(float));
+	bs.Write((char*)&m_myGameObject, sizeof(GameObject));
+	/*bs.Write((char*)&posX, sizeof(float));
+	bs.Write((char*)&posY, sizeof(float));*/
+
 
 	m_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED,
-							0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+		0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
 void Client::onReceivedClientDataPacket(RakNet::Packet * packet)
@@ -234,3 +239,4 @@ void Client::onReceivedClientDataPacket(RakNet::Packet * packet)
 			" " << clientData.position.z << std::endl;
 	}
 }
+//}

@@ -1,10 +1,13 @@
 #include "Client.h"
 
-int main() {
-	
-	auto app = new Client();
-	app->run("AIE", 1280, 720, false);
-	delete app;
+//extern "C"
+//{
+	int main() {
 
-	return 0;
-}
+		auto app = new Client();
+		app->run("AIE", 1280, 720, false);
+		delete app;
+
+		return 0;
+	}
+//}
