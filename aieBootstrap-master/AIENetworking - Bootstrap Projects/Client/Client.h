@@ -19,64 +19,69 @@
 
 //extern "C"
 //{
-	struct GameObject
-	{
-		glm::vec3 position;
-		float rotation;
-		//glm::vec4 colour;
-	};
+struct GameObject
+{
+	float rotation;
+	int clientID;
+	glm::vec3 position;
+	//glm::vec4 colour;
+};
 
-	enum GameMessages
-	{
-		ID_SERVER_TEXT_MESSAGE = ID_USER_PACKET_ENUM + 1,
-		ID_SERVER_SET_CLIENT_ID,
-		ID_CLIENT_CLIENT_DATA
-	};
+enum GameMessages
+{
+	ID_SERVER_TEXT_MESSAGE = ID_USER_PACKET_ENUM + 1,
+	ID_SERVER_SET_CLIENT_ID,
+	ID_CLIENT_CLIENT_DATA
+};
 
-	class Client : public aie::Application {
+class Client : public aie::Application {
 
-	public:
+public:
 
-		 Client();
-		 virtual ~Client();
+	Client();
+	virtual ~Client();
 
-		 virtual bool startup();
-		 virtual void shutdown();
+	virtual bool startup();
+	virtual void shutdown();
 
-		 virtual void update(float deltaTime);
-		 virtual void draw();
+	virtual void update(float deltaTime);
+	virtual void draw();
 
-		// Initialize the connection 
-		 void handleNetworkConnection();
-		 void initialiseClientConnection();
+	// Initialize the connection 
+	void handleNetworkConnection();
+	void initialiseClientConnection();
 
-		// Handle incoming packets 
-		 void handleNetworkMessages();
+	// Handle incoming packets 
+	void handleNetworkMessages();
 
-		 void onSetClientIDPacket(RakNet::Packet * packet);
+	void onSetClientIDPacket(RakNet::Packet * packet);
 
-		 void sendClientGameObject();
+	void sendClientGameObject();
 
-		 void onReceivedClientDataPacket(RakNet::Packet * packet);
+	void onReceivedClientDataPacket(RakNet::Packet * packet);
 
-	protected:
-		int m_myClientID;
-		const char* IP = "127.0.0.1";
-		const unsigned short PORT = 5456;
+	int getClientID() { return m_myClientID; };
 
-		float m_cameraX, m_cameraY;
 
-		GameObject m_myGameObject;
-		RakNet::RakPeerInterface* m_pPeerInterface;
-		std::unordered_map<int, GameObject> m_otherClientGameObjects;
-		aie::Renderer2D*	m_2dRenderer;
-		aie::Texture*		m_OldSchoolCarTexture;
-		aie::Texture*		m_RaceCarTexture;
-		aie::Texture*		m_PoliceCarTexture;
-		aie::Texture*		m_UteCarTexture;
-		aie::Font*			m_font;
-		glm::mat4			m_viewMatrix;
-		glm::mat4			m_projectionMatrix;
-	};
+
+protected:
+	int m_myClientID;
+	const char* IP = "127.0.0.1";
+	const unsigned short PORT = 5456;
+
+	float m_cameraX, m_cameraY;
+
+	GameObject m_myGameObject;
+	RakNet::RakPeerInterface* m_pPeerInterface;
+	std::unordered_map<int, GameObject> m_otherClientGameObjects;
+	aie::Renderer2D*	m_2dRenderer;
+	aie::Texture*		m_OldSchoolCarTexture;
+	aie::Texture*		m_RaceCarTexture;
+	aie::Texture*		m_PoliceCarTexture;
+	aie::Texture*		m_UteCarTexture;
+	aie::Font*			m_font;
+	glm::mat4			m_viewMatrix;
+	glm::mat4			m_projectionMatrix;
+};
 //}
 

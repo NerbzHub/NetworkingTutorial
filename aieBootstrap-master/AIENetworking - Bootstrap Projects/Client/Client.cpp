@@ -37,16 +37,16 @@ bool Client::startup()
 	m_OldSchoolCarTexture = new aie::Texture("./bin/textures/OldSchoolCar.png");
 
 	// Player 2
-	m_PoliceCarTexture = new aie::Texture("./textures/PoliceCar.png");
+	m_PoliceCarTexture = new aie::Texture("./bin/textures/PoliceCar.png");
 
 	// Player 3
-	m_RaceCarTexture = new aie::Texture("./textures/RaceCar.png");
+	m_RaceCarTexture = new aie::Texture("./bin/textures/RaceCar.png");
 
 	// Player 4
-	m_UteCarTexture = new aie::Texture("./textures/Ute.png");
+	m_UteCarTexture = new aie::Texture("./bin/textures/Ute.png");
 
 	// Set the font
-	m_font = new aie::Font("./font/consolas.ttf", 32);
+	m_font = new aie::Font("./bin/font/consolas.ttf", 32);
 
 	m_myGameObject.position = glm::vec3(0, 0, 0);
 	//m_myGameObject.colour = glm::vec4(1, 0, 0, 1);
@@ -55,6 +55,8 @@ bool Client::startup()
 	m_cameraY = 0;
 	m_myGameObject.rotation = 0;
 	setBackgroundColour(0.25f, 0.25f, 0.25f);
+
+	
 
 	// initialise gizmo primitive counts
 	Gizmos::create(10000, 10000, 10000, 10000);
@@ -93,8 +95,17 @@ void Client::update(float deltaTime)
 
 	handleNetworkMessages();
 
+
+
 	// Allow for input
 	aie::Input* input = aie::Input::getInstance();
+
+
+	//--------------------------------------------------------
+	//
+	// I need to make the d and a keys rotation and keep its
+	// local position so that it can go forward.
+	//--------------------------------------------------------
 
 	// WASD controls
 	if (input->isKeyDown(aie::INPUT_KEY_W))
@@ -115,7 +126,6 @@ void Client::update(float deltaTime)
 	if (input->isKeyDown(aie::INPUT_KEY_D))
 	{
 		m_myGameObject.position.x += 10.0f * deltaTime;
-		
 		sendClientGameObject();
 	}
 
@@ -144,6 +154,27 @@ void Client::draw()
 	// Exit text
 	m_2dRenderer->drawText(m_font, "Press ESC to quit!", 0, 720 - 64);
 
+	switch (m_myClientID)
+	{
+	case 1:
+		m_2dRenderer->drawSprite(m_OldSchoolCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+		break;
+
+	case 2:
+		m_2dRenderer->drawSprite(m_PoliceCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+		break;
+
+	case 3:
+		m_2dRenderer->drawSprite(m_RaceCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+		break;
+
+	case 4:
+		m_2dRenderer->drawSprite(m_UteCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+
+	default:
+		break;
+	}
+
 	m_2dRenderer->setUVRect(0, 0, 1, 1);
 	m_2dRenderer->drawSprite(m_OldSchoolCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
 
@@ -160,12 +191,20 @@ void Client::draw()
 		//Gizmos::addSphere(otherClient.second.position,
 		//	1.0f, 32, 32, otherClient.second.colour);
 		m_2dRenderer->setUVRect(0, 0, 1, 1);
-		m_2dRenderer->drawSprite(m_OldSchoolCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, m_myGameObject.rotation);
+
+		switch (m_myClientID)
+		{
+
+		default:
+			break;
+		}
+
+		m_2dRenderer->drawSprite(m_OldSchoolCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f, m_myGameObject.rotation);
 
 		/*Gizmos::add2DAABBFilled(otherClient.second.position,
 			glm::vec2(32, 32), otherClient.second.colour);*/
 	}
-	
+
 	//Gizmos::draw(m_projectionMatrix * m_viewMatrix);
 
 	// done drawing sprites
@@ -294,4 +333,5 @@ void Client::onReceivedClientDataPacket(RakNet::Packet * packet)
 			" " << clientData.position.z << std::endl;
 	}
 }
+
 //}
