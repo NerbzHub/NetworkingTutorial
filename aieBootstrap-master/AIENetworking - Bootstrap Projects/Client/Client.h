@@ -22,7 +22,8 @@
 	struct GameObject
 	{
 		glm::vec3 position;
-		glm::vec4 colour;
+		float rotation;
+		//glm::vec4 colour;
 	};
 
 	enum GameMessages
@@ -59,20 +60,23 @@
 		 void onReceivedClientDataPacket(RakNet::Packet * packet);
 
 	protected:
-		GameObject m_myGameObject;
-		RakNet::RakPeerInterface* m_pPeerInterface;
 		int m_myClientID;
 		const char* IP = "127.0.0.1";
 		const unsigned short PORT = 5456;
+
+		float m_cameraX, m_cameraY;
+
+		GameObject m_myGameObject;
+		RakNet::RakPeerInterface* m_pPeerInterface;
 		std::unordered_map<int, GameObject> m_otherClientGameObjects;
 		aie::Renderer2D*	m_2dRenderer;
 		aie::Texture*		m_OldSchoolCarTexture;
 		aie::Texture*		m_RaceCarTexture;
 		aie::Texture*		m_PoliceCarTexture;
 		aie::Texture*		m_UteCarTexture;
-
-		glm::mat4	m_viewMatrix;
-		glm::mat4	m_projectionMatrix;
+		aie::Font*			m_font;
+		glm::mat4			m_viewMatrix;
+		glm::mat4			m_projectionMatrix;
 	};
 //}
 

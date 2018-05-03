@@ -1,10 +1,11 @@
 #include "Client.h"
 #include "Gizmos.h"
 #include "Input.h"
+#include "Texture.h"
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <iostream>
-
+#include "Font.h"
 
 using glm::vec3;
 using glm::vec4;
@@ -20,6 +21,7 @@ Client::Client()
 
 Client::~Client()
 {
+
 }
 
 bool Client::startup()
@@ -27,22 +29,31 @@ bool Client::startup()
 	//Creates a renderer for the textures
 	m_2dRenderer = new aie::Renderer2D();
 
+
 	// If the player's ID is 1 then it's player 1 etc.
 	//
 	//	Cops and robbers and the second player is the cop so that it can be 2-4 
-	/// Player 1
-	m_OldSchoolCarTexture = new aie::Texture("./dependencies/textures/OldSchoolCar.png");
-	/// Player 2
-	m_PoliceCarTexture = new aie::Texture("./dependencies/textures/PoliceCar.png");
-	/// Player 3
-	m_RaceCarTexture = new aie::Texture("./dependencies/textures/RaceCar.png");
-	/// Player 4
-	m_UteCarTexture = new aie::Texture("./dependencies/textures/Ute.png");
+	// Player 1
+	m_OldSchoolCarTexture = new aie::Texture("./bin/textures/OldSchoolCar.png");
 
+	// Player 2
+	m_PoliceCarTexture = new aie::Texture("./textures/PoliceCar.png");
+
+	// Player 3
+	m_RaceCarTexture = new aie::Texture("./textures/RaceCar.png");
+
+	// Player 4
+	m_UteCarTexture = new aie::Texture("./textures/Ute.png");
+
+	// Set the font
+	m_font = new aie::Font("./font/consolas.ttf", 32);
 
 	m_myGameObject.position = glm::vec3(0, 0, 0);
-	m_myGameObject.colour = glm::vec4(1, 0, 0, 1);
+	//m_myGameObject.colour = glm::vec4(1, 0, 0, 1);
 
+	m_cameraX = 0;
+	m_cameraY = 0;
+	m_myGameObject.rotation = 0;
 	setBackgroundColour(0.25f, 0.25f, 0.25f);
 
 	// initialise gizmo primitive counts
@@ -54,7 +65,6 @@ bool Client::startup()
 		getWindowWidth() / (float)getWindowHeight(),
 		0.1f, 1000.f);
 
-
 	handleNetworkConnection();
 
 	return true;
@@ -62,14 +72,14 @@ bool Client::startup()
 
 void Client::shutdown()
 {
+	delete m_font;
 	delete m_2dRenderer;
 	delete m_OldSchoolCarTexture;
 	delete m_PoliceCarTexture;
 	delete m_RaceCarTexture;
 	delete m_UteCarTexture;
 
-
-	Gizmos::destroy();
+	//Gizmos::destroy();
 }
 
 void Client::update(float deltaTime)
@@ -79,7 +89,7 @@ void Client::update(float deltaTime)
 	float time = getTime();
 
 	// wipe the gizmos clean for this frame
-	Gizmos::clear();
+	//Gizmos::clear();
 
 	handleNetworkMessages();
 
@@ -105,6 +115,7 @@ void Client::update(float deltaTime)
 	if (input->isKeyDown(aie::INPUT_KEY_D))
 	{
 		m_myGameObject.position.x += 10.0f * deltaTime;
+		
 		sendClientGameObject();
 	}
 
@@ -124,23 +135,41 @@ void Client::draw()
 	// wipe the screen to the background colour
 	clearScreen();
 
+	// set the camera position before we begin rendering
+	m_2dRenderer->setCameraPos(m_cameraX, m_cameraY);
+
+	// begin drawing sprites
+	m_2dRenderer->begin();
+
+	// Exit text
+	m_2dRenderer->drawText(m_font, "Press ESC to quit!", 0, 720 - 64);
+
+	m_2dRenderer->setUVRect(0, 0, 1, 1);
+	m_2dRenderer->drawSprite(m_OldSchoolCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+
 	// update perspective in case window resized
-	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
-		getWindowWidth() / (float)getWindowHeight(),
-		0.1f, 1000.f);
-	m_projectionMatrix = glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, 1.0f, 100.0f);
+	//m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
+		//getWindowWidth() / (float)getWindowHeight(),
+		//0.1f, 1000.f);
+	//m_projectionMatrix = glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, 1.0f, 100.0f);
 	//Gizmos::addSphere(m_myGameObject.position, 1.0f, 32, 32, m_myGameObject.colour);
-	Gizmos::add2DAABBFilled(m_myGameObject.position, glm::vec2(32, 32), m_myGameObject.colour);
+	//Gizmos::add2DAABBFilled(m_myGameObject.position, glm::vec2(32, 32), m_myGameObject.colour);
 
 	for (auto& otherClient : m_otherClientGameObjects)
 	{
-		/*Gizmos::addSphere(otherClient.second.position,
-			1.0f, 32, 32, otherClient.second.colour);*/
-		Gizmos::add2DAABBFilled(otherClient.second.position,
-			glm::vec2(32, 32), otherClient.second.colour);
-	}
+		//Gizmos::addSphere(otherClient.second.position,
+		//	1.0f, 32, 32, otherClient.second.colour);
+		m_2dRenderer->setUVRect(0, 0, 1, 1);
+		m_2dRenderer->drawSprite(m_OldSchoolCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, m_myGameObject.rotation);
 
-	Gizmos::draw(m_projectionMatrix * m_viewMatrix);
+		/*Gizmos::add2DAABBFilled(otherClient.second.position,
+			glm::vec2(32, 32), otherClient.second.colour);*/
+	}
+	
+	//Gizmos::draw(m_projectionMatrix * m_viewMatrix);
+
+	// done drawing sprites
+	m_2dRenderer->end();
 }
 
 
