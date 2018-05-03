@@ -9,6 +9,8 @@
 
 #include <iostream>
 #include "Application.h"
+#include "Renderer2D.h"
+#include "Texture.h"
 #include <glm/mat4x4.hpp>
 #include <RakPeerInterface.h>
 #include <MessageIdentifiers.h>
@@ -63,6 +65,12 @@
 		const char* IP = "127.0.0.1";
 		const unsigned short PORT = 5456;
 		std::unordered_map<int, GameObject> m_otherClientGameObjects;
+		aie::Renderer2D*	m_2dRenderer;
+		aie::Texture*		m_OldSchoolCarTexture;
+		aie::Texture*		m_RaceCarTexture;
+		aie::Texture*		m_PoliceCarTexture;
+		aie::Texture*		m_UteCarTexture;
+
 		glm::mat4	m_viewMatrix;
 		glm::mat4	m_projectionMatrix;
 	};

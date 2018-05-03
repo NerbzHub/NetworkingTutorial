@@ -13,14 +13,31 @@ using aie::Gizmos;
 
 //extern "C"
 //{
-Client::Client() {
+Client::Client()
+{
 
 }
 
-Client::~Client() {
+Client::~Client()
+{
 }
 
-bool Client::startup() {
+bool Client::startup()
+{
+	//Creates a renderer for the textures
+	m_2dRenderer = new aie::Renderer2D();
+
+	// If the player's ID is 1 then it's player 1 etc.
+	//
+	//	Cops and robbers and the second player is the cop so that it can be 2-4 
+	/// Player 1
+	m_OldSchoolCarTexture = new aie::Texture("./dependencies/textures/OldSchoolCar.png");
+	/// Player 2
+	m_PoliceCarTexture = new aie::Texture("./dependencies/textures/PoliceCar.png");
+	/// Player 3
+	m_RaceCarTexture = new aie::Texture("./dependencies/textures/RaceCar.png");
+	/// Player 4
+	m_UteCarTexture = new aie::Texture("./dependencies/textures/Ute.png");
 
 
 	m_myGameObject.position = glm::vec3(0, 0, 0);
@@ -45,10 +62,18 @@ bool Client::startup() {
 
 void Client::shutdown()
 {
+	delete m_2dRenderer;
+	delete m_OldSchoolCarTexture;
+	delete m_PoliceCarTexture;
+	delete m_RaceCarTexture;
+	delete m_UteCarTexture;
+
+
 	Gizmos::destroy();
 }
 
-void Client::update(float deltaTime) {
+void Client::update(float deltaTime)
+{
 
 	// query time since application started
 	float time = getTime();
@@ -93,7 +118,8 @@ void Client::update(float deltaTime) {
 		quit();
 }
 
-void Client::draw() {
+void Client::draw()
+{
 
 	// wipe the screen to the background colour
 	clearScreen();
