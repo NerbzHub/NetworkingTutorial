@@ -74,12 +74,12 @@ bool Client::startup()
 
 void Client::shutdown()
 {
-	delete m_font;
 	delete m_2dRenderer;
 	delete m_OldSchoolCarTexture;
 	delete m_PoliceCarTexture;
 	delete m_RaceCarTexture;
 	delete m_UteCarTexture;
+	delete m_font;
 
 	//Gizmos::destroy();
 }
