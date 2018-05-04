@@ -67,10 +67,11 @@ bool Client::startup()
 		getWindowWidth() / (float)getWindowHeight(),
 		0.1f, 1000.f);
 
-
+	std::cout << "Enter the server's IP address: ";
 
 	std::string serverIP;
 	std::cin >> serverIP;
+	std::cout << std::endl;
 	IP = serverIP.c_str();// new char[serverIP.length()];
 	// trcpy(IP, );
 
