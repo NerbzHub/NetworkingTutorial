@@ -6,14 +6,15 @@
 #include <RakPeerInterface.h>
 #include <MessageIdentifiers.h>
 #include <BitStream.h>
-#include "GameMessages.h"
 #include <fstream>
-#include "Server.h"
+#include "ServerLib\includes\Server.h"
+#include "ServerLib\includes\GameMessages.h"
 
 
 //-------------------------need to add the .lib of serverlib and properly linked it.
 int main()
 {
+
 	const unsigned short PORT = 5456;
 	RakNet::RakPeerInterface* pPeerInterface = nullptr;
 
@@ -22,7 +23,8 @@ int main()
 
 	//Display the server's IP
 	std::cout << "The server's IP is: ";
-	getIPAddress();
+	Server server;
+	server.getIPAddress();
 
 	//Initialize the raknet peer interface first
 	pPeerInterface = RakNet::RakPeerInterface::GetInstance();
@@ -34,7 +36,7 @@ int main()
 	pPeerInterface->Startup(32, &sd, 1);
 	pPeerInterface->SetMaximumIncomingConnections(32);
 
-	handleNetworkMessages(pPeerInterface);
+	server.handleNetworkMessages(pPeerInterface);
 
 	// Startup a thread to ping clients every second.
 	// std::thread pingThread(sendClientPing, pPeerInterface);
