@@ -66,7 +66,7 @@ public:
 
 protected:
 	int m_myClientID;
-	const char* IP = "127.0.0.1";
+	const char* IP;
 	const unsigned short PORT = 5456;
 
 	float m_cameraX, m_cameraY;

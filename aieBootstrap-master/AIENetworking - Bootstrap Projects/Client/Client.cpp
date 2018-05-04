@@ -67,6 +67,14 @@ bool Client::startup()
 		getWindowWidth() / (float)getWindowHeight(),
 		0.1f, 1000.f);
 
+
+
+	std::string serverIP;
+	std::cin >> serverIP;
+	IP = serverIP.c_str();// new char[serverIP.length()];
+	// trcpy(IP, );
+
+
 	handleNetworkConnection();
 
 	return true;
@@ -110,22 +118,22 @@ void Client::update(float deltaTime)
 	// WASD controls
 	if (input->isKeyDown(aie::INPUT_KEY_W))
 	{
-		m_myGameObject.position.y += 10.0f * deltaTime;
+		m_myGameObject.position.y += 250.0f * deltaTime;
 		sendClientGameObject();
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_S))
 	{
-		m_myGameObject.position.y -= 10.0f * deltaTime;
+		m_myGameObject.position.y -= 250.0f * deltaTime;
 		sendClientGameObject();
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_A))
 	{
-		m_myGameObject.position.x -= 10.0f * deltaTime;
+		m_myGameObject.position.x -= 250.0f * deltaTime;
 		sendClientGameObject();
 	}
 	if (input->isKeyDown(aie::INPUT_KEY_D))
 	{
-		m_myGameObject.position.x += 10.0f * deltaTime;
+		m_myGameObject.position.x += 250.0f * deltaTime;
 		sendClientGameObject();
 	}
 
@@ -170,7 +178,7 @@ void Client::draw()
 
 	case 4:
 		m_2dRenderer->drawSprite(m_UteCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
-
+		break;
 	default:
 		break;
 	}
@@ -194,6 +202,21 @@ void Client::draw()
 
 		switch (m_myClientID)
 		{
+		case 1:
+			m_2dRenderer->drawSprite(m_OldSchoolCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+			break;
+
+		case 2:
+			m_2dRenderer->drawSprite(m_PoliceCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+			break;
+
+		case 3:
+			m_2dRenderer->drawSprite(m_RaceCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+			break;
+
+		case 4:
+			m_2dRenderer->drawSprite(m_UteCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+			break;
 
 		default:
 			break;

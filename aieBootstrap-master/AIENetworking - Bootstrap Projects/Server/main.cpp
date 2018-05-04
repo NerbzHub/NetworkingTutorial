@@ -7,12 +7,13 @@
 #include <MessageIdentifiers.h>
 #include <BitStream.h>
 #include "GameMessages.h"
+#include <fstream>
 
 void handleNetworkMessages(RakNet::RakPeerInterface* pPeerInterface);
-void sendNewClientID(RakNet::RakPeerInterface* pPeerInterface,
-	RakNet::SystemAddress& address);
+void sendNewClientID(RakNet::RakPeerInterface* pPeerInterface, RakNet::SystemAddress& address);
 int nextClientID = 1;
-
+std::string getIPAddress();
+//std::string ip = getIPAddress();
 
 int main()
 {
@@ -21,6 +22,10 @@ int main()
 
 	//Startup the server
 	std::cout << "Starting up the server..." << std::endl;
+
+	//Display the server's IP
+	std::cout << "The server's IP is: ";
+	getIPAddress();
 
 	//Initialize the raknet peer interface first
 	pPeerInterface = RakNet::RakPeerInterface::GetInstance();
@@ -79,14 +84,41 @@ void handleNetworkMessages(RakNet::RakPeerInterface* pPeerInterface)
 	}
 }
 
-void sendNewClientID(RakNet::RakPeerInterface* pPeerInterface, 
-					RakNet::SystemAddress& address)
+void sendNewClientID(RakNet::RakPeerInterface* pPeerInterface,
+	RakNet::SystemAddress& address)
 {
 	RakNet::BitStream bs;
 	bs.Write((RakNet::MessageID)GameMessages::ID_SERVER_SET_CLIENT_ID);
 	bs.Write(nextClientID);
 	nextClientID++;
 
-	pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 
-						0, address, false);
+	pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED,
+		0, address, false);
+}
+
+std::string getIPAddress()
+{
+	std::string line;
+	std::ifstream IPFile;
+	int offset;
+	char* search0 = "IPv4 Address. . . . . . . . . . . :";      // search pattern
+
+	system("ipconfig > ip.txt");
+
+	IPFile.open("ip.txt");
+	if (IPFile.is_open())
+	{
+		while (!IPFile.eof())
+		{
+			getline(IPFile, line);
+			if ((offset = line.find(search0, 0)) != std::string::npos)
+			{
+				//   IPv4 Address. . . . . . . . . . . : 1
+				//1234567890123456789012345678901234567890     
+				line.erase(0, 39);
+				std::cout << line;
+			}
+		}
+	}
+	return line;
 }
