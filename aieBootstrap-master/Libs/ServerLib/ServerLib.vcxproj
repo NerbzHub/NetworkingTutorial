@@ -158,7 +158,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="GameMessages.h" />
     <ClInclude Include="Server.h" />
   </ItemGroup>
   <ItemGroup>

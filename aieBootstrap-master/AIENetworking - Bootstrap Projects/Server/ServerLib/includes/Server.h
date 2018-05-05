@@ -5,7 +5,6 @@
 #include <chrono>
 #include <RakPeerInterface.h>
 #include <MessageIdentifiers.h>
-#include "GameMessages.h"
 #include <BitStream.h>
 #include <fstream>
 

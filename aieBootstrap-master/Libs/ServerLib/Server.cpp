@@ -53,8 +53,9 @@ void Server::handleNetworkMessages(RakNet::RakPeerInterface * pPeerInterface)
 
 void Server::sendNewClientID(RakNet::RakPeerInterface * pPeerInterface, RakNet::SystemAddress & address)
 {
+	
 	RakNet::BitStream bs;
-	bs.Write((RakNet::MessageID)GameMessages::ID_SERVER_SET_CLIENT_ID);
+	bs.Write((RakNet::MessageID)ID_SERVER_SET_CLIENT_ID);
 	bs.Write(nextClientID);
 	nextClientID++;
 
@@ -88,4 +89,18 @@ std::string Server::getIPAddress()
 		}
 	}
 	return line;
+}
+
+void Server::sendClientPing(RakNet::RakPeerInterface * pPeerInterface)
+{
+	while (true)
+	{
+		RakNet::BitStream bs;
+		bs.Write((RakNet::MessageID)ID_SERVER_TEXT_MESSAGE);
+		bs.Write("Ping!");
+
+		pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED, 0,
+			RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
 }

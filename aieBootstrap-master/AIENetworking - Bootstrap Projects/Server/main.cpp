@@ -8,7 +8,6 @@
 #include <BitStream.h>
 #include <fstream>
 #include "ServerLib\includes\Server.h"
-#include "ServerLib\includes\GameMessages.h"
 
 
 //-------------------------need to add the .lib of serverlib and properly linked it.
