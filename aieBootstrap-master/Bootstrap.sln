@@ -14,6 +14,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "AIENetworking - B
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerLib", "Libs\ServerLib\ServerLib.vcxproj", "{FD152ADA-769B-4175-A6E4-92F35859F104}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ClientLib", "Libs\ClientLib\ClientLib\ClientLib.vcxproj", "{910F3B76-F31B-4993-A301-74E437BA075C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -52,6 +54,14 @@ Global
 		{FD152ADA-769B-4175-A6E4-92F35859F104}.Release|x64.Build.0 = Release|x64
 		{FD152ADA-769B-4175-A6E4-92F35859F104}.Release|x86.ActiveCfg = Release|Win32
 		{FD152ADA-769B-4175-A6E4-92F35859F104}.Release|x86.Build.0 = Release|Win32
+		{910F3B76-F31B-4993-A301-74E437BA075C}.Debug|x64.ActiveCfg = Debug|x64
+		{910F3B76-F31B-4993-A301-74E437BA075C}.Debug|x64.Build.0 = Debug|x64
+		{910F3B76-F31B-4993-A301-74E437BA075C}.Debug|x86.ActiveCfg = Debug|Win32
+		{910F3B76-F31B-4993-A301-74E437BA075C}.Debug|x86.Build.0 = Debug|Win32
+		{910F3B76-F31B-4993-A301-74E437BA075C}.Release|x64.ActiveCfg = Release|x64
+		{910F3B76-F31B-4993-A301-74E437BA075C}.Release|x64.Build.0 = Release|x64
+		{910F3B76-F31B-4993-A301-74E437BA075C}.Release|x86.ActiveCfg = Release|Win32
+		{910F3B76-F31B-4993-A301-74E437BA075C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
