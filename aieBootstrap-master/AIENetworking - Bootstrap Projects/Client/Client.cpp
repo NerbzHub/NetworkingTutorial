@@ -1,3 +1,9 @@
+/**
+	Client.h
+	Purpose: The client side of the game.
+
+	@author Nathan Nette
+*/
 #include "Client.h"
 #include "Gizmos.h"
 #include "Input.h"
@@ -12,18 +18,26 @@ using glm::vec4;
 using glm::mat4;
 using aie::Gizmos;
 
-//extern "C"
-//{
+/**
+	Default Constructor.
+*/
 Client::Client()
 {
 
 }
 
+/**
+	Default Deconstructor.
+*/
 Client::~Client()
 {
 
 }
 
+/**
+	Startup is where most values are initialized.
+	It is also where the camera is created.
+*/
 bool Client::startup()
 {
 	//Creates a renderer for the textures
@@ -31,8 +45,7 @@ bool Client::startup()
 
 
 	// If the player's ID is 1 then it's player 1 etc.
-	//
-	//	Cops and robbers and the second player is the cop so that it can be 2-4 
+	
 	// Player 1
 	m_OldSchoolCarTexture = new aie::Texture("./bin/textures/OldSchoolCar.png");
 
@@ -48,41 +61,57 @@ bool Client::startup()
 	// Set the font
 	m_font = new aie::Font("./bin/font/consolas.ttf", 32);
 
-	m_myGameObject.position = glm::vec3(0, 0, 0);
-	//m_myGameObject.colour = glm::vec4(1, 0, 0, 1);
+	// Sets the starting position of this client's gameObject.
+	m_myGameObject.position = glm::vec3(300, 300, 0);
 
+	// Sets the camera's x and y to 0.
 	m_cameraX = 0;
 	m_cameraY = 0;
-	m_myGameObject.rotation = 0;
-	setBackgroundColour(0.25f, 0.25f, 0.25f);
 
-	
+	// Sets background colour to grey.
+	setBackgroundColour(0.25f, 0.25f, 0.25f);
 
 	// initialise gizmo primitive counts
 	Gizmos::create(10000, 10000, 10000, 10000);
 
-	// create simple camera transforms
+	// Create simple camera transforms.
 	m_viewMatrix = glm::lookAt(vec3(0, 10, 10), vec3(0), vec3(0, 1, 0));
 	m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
 		getWindowWidth() / (float)getWindowHeight(),
 		0.1f, 1000.f);
 
+	// Print to console enter the server's IP address.
 	std::cout << "Enter the server's IP address: ";
 
+	// Create a string for the IP the user will input to.
 	std::string serverIP;
+
+	// Take in input.
 	std::cin >> serverIP;
+
+	// Go to next line.
 	std::cout << std::endl;
-	IP = serverIP.c_str();// new char[serverIP.length()];
-	// trcpy(IP, );
 
+	// Allocate the input IP into the IP value.
+	IP = serverIP.c_str();
 
+	/*	Gets an instance of RakPeerInterface and initializes the
+		RakNet peer interface first.*/
 	handleNetworkConnection();
 
 	return true;
 }
 
+/**
+	Shutdown is called when the application is closed.
+	Shutdown calls delete for any allocated memory to
+	prevent memory leaks.
+*/
 void Client::shutdown()
 {
+	/*
+		Calling all necessary deletes to deallocate memory.
+	*/
 	delete m_2dRenderer;
 	delete m_OldSchoolCarTexture;
 	delete m_PoliceCarTexture;
@@ -90,31 +119,28 @@ void Client::shutdown()
 	delete m_UteCarTexture;
 	delete m_font;
 
-	//Gizmos::destroy();
+	// Deletes all gizmos.
+	Gizmos::destroy();
 }
 
+/**
+	Update is called every frame, it is where majority of
+	the game occurs.
+
+	@param deltaTime The frames per second of the game.
+*/
 void Client::update(float deltaTime)
 {
-
-	// query time since application started
+	// Query time since application started.
 	float time = getTime();
 
-	// wipe the gizmos clean for this frame
-	//Gizmos::clear();
-
+	/*	Gets an instance of RakPeerInterface and initializes the
+	RakNet peer interface first.*/
 	handleNetworkMessages();
-
-
 
 	// Allow for input
 	aie::Input* input = aie::Input::getInstance();
 
-
-	//--------------------------------------------------------
-	//
-	// I need to make the d and a keys rotation and keep its
-	// local position so that it can go forward.
-	//--------------------------------------------------------
 
 	// WASD controls
 	if (input->isKeyDown(aie::INPUT_KEY_W))
@@ -223,7 +249,7 @@ void Client::draw()
 			break;
 		}
 
-		m_2dRenderer->drawSprite(m_OldSchoolCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f, m_myGameObject.rotation);
+		m_2dRenderer->drawSprite(m_OldSchoolCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f);
 
 		/*Gizmos::add2DAABBFilled(otherClient.second.position,
 			glm::vec2(32, 32), otherClient.second.colour);*/
