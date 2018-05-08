@@ -1,5 +1,5 @@
 /**
-	Client.h
+	Client.cpp
 	Purpose: The client side of the game.
 
 	@author Nathan Nette
