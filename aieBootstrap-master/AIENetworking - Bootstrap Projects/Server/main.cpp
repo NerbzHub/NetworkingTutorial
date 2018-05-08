@@ -13,7 +13,7 @@
 #include <MessageIdentifiers.h>
 #include <BitStream.h>
 #include <fstream>
-#include "ServerLib\includes\Server.h"
+#include "Server.h"
 
 /**
 	Main runs the application.

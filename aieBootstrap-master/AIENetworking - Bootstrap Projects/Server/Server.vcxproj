@@ -71,16 +71,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir)dependencies/raknet/include;$(ProjectDir)ServerLib/includes;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)dependencies/raknet/libs;$(ProjectDir)ServerLib/libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)dependencies/raknet/include;$(ProjectDir)dependencies/ServerLib/includes;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)dependencies/raknet/libs;$(ProjectDir)dependencies/ServerLib/libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>$(SolutionDir)dependencies/raknet/libs;$(SolutionDir)dependencies/ServerLib/libs;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)dependencies/raknet/include;$(SolutionDir)dependencies/ServerLib/includes;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)dependencies/raknet/libs;$(ProjectDir)dependencies/ServerLib/libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)dependencies/raknet/include;$(ProjectDir)dependencies/ServerLib/includes;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
@@ -94,6 +94,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)dependencies/RakNet/include;$(SolutionDir)dependencies/ServerLib/libs;</AdditionalIncludeDirectories>
       <AdditionalUsingDirectories>$(SolutionDir)ServerLib\includes;%(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
