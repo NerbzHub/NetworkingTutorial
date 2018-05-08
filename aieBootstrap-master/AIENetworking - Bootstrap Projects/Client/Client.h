@@ -81,7 +81,6 @@ public:
 	*/
 	virtual void draw();
 
-
 	/**
 		Gets an instance of RakPeerInterface and initializes the
 		RakNet peer interface first.

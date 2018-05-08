@@ -31,8 +31,8 @@ int main()
 	//Create a socket descriptor to describe this connection.
 	RakNet::SocketDescriptor sd(PORT, 0);
 
-	// Call startup - max of 32 connections, on the assigned port
-	pPeerInterface->Startup(32, &sd, 1);
+	// Call startup - max of 4 connections, on the assigned port
+	pPeerInterface->Startup(4, &sd, 1);
 	pPeerInterface->SetMaximumIncomingConnections(32);
 
 	server.handleNetworkMessages(pPeerInterface);

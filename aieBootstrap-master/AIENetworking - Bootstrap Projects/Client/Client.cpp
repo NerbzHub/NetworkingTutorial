@@ -45,7 +45,7 @@ bool Client::startup()
 
 
 	// If the player's ID is 1 then it's player 1 etc.
-	
+
 	// Player 1
 	m_OldSchoolCarTexture = new aie::Texture("./bin/textures/OldSchoolCar.png");
 
@@ -138,11 +138,17 @@ void Client::update(float deltaTime)
 	RakNet peer interface first.*/
 	handleNetworkMessages();
 
-	// Allow for input
+	// Allow for keyboard input.
 	aie::Input* input = aie::Input::getInstance();
 
 
-	// WASD controls
+	/*
+		If either W, A, S or D is pressed on the keyboard, move the client's
+		GameObject by adding or subtracting float values to their x and y axis.
+
+		After the calculation of the movement occurs, send the new position to
+		the server to update the other clients connected to the server.
+	*/
 	if (input->isKeyDown(aie::INPUT_KEY_W))
 	{
 		m_myGameObject.position.y += 250.0f * deltaTime;
@@ -164,92 +170,113 @@ void Client::update(float deltaTime)
 		sendClientGameObject();
 	}
 
-
+	// Send any new data of the client's gameObject to the server.
 	sendClientGameObject();
 
+	// Renders everything that needs to be rendered to the screen.
 	draw();
 
-	// quit if we press escape
+	// Quit the application if the user presses escape.
 	if (input->isKeyDown(aie::INPUT_KEY_ESCAPE))
 		quit();
 }
 
+/**
+	Draws everything needing to be drawn to the screen
+	every frame.
+*/
 void Client::draw()
 {
-
-	// wipe the screen to the background colour
+	// Wipe the screen to the background colour.
 	clearScreen();
 
-	// set the camera position before we begin rendering
+	// Set the camera position before we begin rendering.
 	m_2dRenderer->setCameraPos(m_cameraX, m_cameraY);
 
-	// begin drawing sprites
+	// Begin drawing sprites.
 	m_2dRenderer->begin();
 
-	// Exit text
+	// The text to inform the user that to quit they can simply press esc.
 	m_2dRenderer->drawText(m_font, "Press ESC to quit!", 0, 720 - 64);
 
+
+	/**
+		This switch statement checks which client ID this client has and depending on
+		which one it is, it will display a different car.
+	*/
 	switch (m_myClientID)
 	{
 	case 1:
+	{
+		/*	Draws OldSchoolCarTexture to the position of this client's game object with a
+			width of 32 and height of 57 pixels. It has no rotation and a depth of 1*/
 		m_2dRenderer->drawSprite(m_OldSchoolCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
 		break;
+	}
 
 	case 2:
+	{
+		/*	Draws PoliceCarTexture to the position of this client's game object with a
+			width of 32 and height of 57 pixels. It has no rotation and a depth of 1*/
 		m_2dRenderer->drawSprite(m_PoliceCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
 		break;
+	}
 
 	case 3:
+	{
+		/*	Draws RaceCarTexture to the position of this client's game object with a
+			width of 32 and height of 57 pixels. It has no rotation and a depth of 1*/
 		m_2dRenderer->drawSprite(m_RaceCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
 		break;
+	}
 
 	case 4:
+	{
+		/*	Draws UteCarTexture to the position of this client's game object with a
+			width of 32 and height of 57 pixels. It has no rotation and a depth of 1*/
 		m_2dRenderer->drawSprite(m_UteCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
 		break;
+	}
+
 	default:
 		break;
 	}
 
-	m_2dRenderer->setUVRect(0, 0, 1, 1);
+	// This allows the sprite to have a UV texture on it.
+	/*m_2dRenderer->setUVRect(0, 0, 1, 1);
 	m_2dRenderer->drawSprite(m_OldSchoolCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
-
-	// update perspective in case window resized
-	//m_projectionMatrix = glm::perspective(glm::pi<float>() * 0.25f,
-		//getWindowWidth() / (float)getWindowHeight(),
-		//0.1f, 1000.f);
-	//m_projectionMatrix = glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f, 1.0f, 100.0f);
-	//Gizmos::addSphere(m_myGameObject.position, 1.0f, 32, 32, m_myGameObject.colour);
-	//Gizmos::add2DAABBFilled(m_myGameObject.position, glm::vec2(32, 32), m_myGameObject.colour);
-
+*/
+	/**
+		For every other client, do what's in this loop.
+	*/
 	for (auto& otherClient : m_otherClientGameObjects)
 	{
-		//Gizmos::addSphere(otherClient.second.position,
-		//	1.0f, 32, 32, otherClient.second.colour);
+
 		m_2dRenderer->setUVRect(0, 0, 1, 1);
 
-		switch (m_myClientID)
+		switch (otherClient.first)
 		{
 		case 1:
-			m_2dRenderer->drawSprite(m_OldSchoolCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+			m_2dRenderer->drawSprite(m_OldSchoolCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f, 0, 1);
 			break;
 
 		case 2:
-			m_2dRenderer->drawSprite(m_PoliceCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+			m_2dRenderer->drawSprite(m_PoliceCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f, 0, 1);
 			break;
 
 		case 3:
-			m_2dRenderer->drawSprite(m_RaceCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+			m_2dRenderer->drawSprite(m_RaceCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f, 0, 1);
 			break;
 
 		case 4:
-			m_2dRenderer->drawSprite(m_UteCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
+			m_2dRenderer->drawSprite(m_UteCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f, 0, 1);
 			break;
 
 		default:
 			break;
 		}
 
-		m_2dRenderer->drawSprite(m_OldSchoolCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f);
+		//m_2dRenderer->drawSprite(m_OldSchoolCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f);
 
 		/*Gizmos::add2DAABBFilled(otherClient.second.position,
 			glm::vec2(32, 32), otherClient.second.colour);*/
