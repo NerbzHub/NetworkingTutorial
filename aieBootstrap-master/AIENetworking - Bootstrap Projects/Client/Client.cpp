@@ -242,85 +242,115 @@ void Client::draw()
 		break;
 	}
 
-	// This allows the sprite to have a UV texture on it.
-	/*m_2dRenderer->setUVRect(0, 0, 1, 1);
-	m_2dRenderer->drawSprite(m_OldSchoolCarTexture, m_myGameObject.position.x, m_myGameObject.position.y, 32.0f, 57.0f, 0, 1);
-*/
 	/**
 		For every other client, do what's in this loop.
 	*/
 	for (auto& otherClient : m_otherClientGameObjects)
 	{
-
+		// Create a rectangle that can have a texture on it.
 		m_2dRenderer->setUVRect(0, 0, 1, 1);
 
+		/**
+			This switch statement checks the number of the client ID to see which texture 
+			needs to be drawn for each other client connected to the server.
+		*/
 		switch (otherClient.first)
 		{
 		case 1:
+		{
+			/*	Draws OldSchoolCarTexture to the position of this client's game object with a
+			width of 32 and height of 57 pixels. It has no rotation and a depth of 1
+			but only if the client ID is 1.*/
 			m_2dRenderer->drawSprite(m_OldSchoolCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f, 0, 1);
 			break;
+		}
 
 		case 2:
+		{
+			/*	Draws PoliceCarTexture to the position of this client's game object with a
+			width of 32 and height of 57 pixels. It has no rotation and a depth of 1
+			but only if the client ID is 2.*/
 			m_2dRenderer->drawSprite(m_PoliceCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f, 0, 1);
 			break;
+		}
 
 		case 3:
+		{
+			/*	Draws RaceCarTexture to the position of this client's game object with a
+			width of 32 and height of 57 pixels. It has no rotation and a depth of 1
+			but only if the client ID is 3.*/
 			m_2dRenderer->drawSprite(m_RaceCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f, 0, 1);
 			break;
+		}
 
 		case 4:
+		{
+			/*	Draws UteCarTexture to the position of this client's game object with a
+			width of 32 and height of 57 pixels. It has no rotation and a depth of 1
+			but only if the client ID is 4.*/
 			m_2dRenderer->drawSprite(m_UteCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f, 0, 1);
 			break;
+		}
 
 		default:
 			break;
 		}
-
-		//m_2dRenderer->drawSprite(m_OldSchoolCarTexture, otherClient.second.position.x, otherClient.second.position.y, 32.0f, 57.0f);
-
-		/*Gizmos::add2DAABBFilled(otherClient.second.position,
-			glm::vec2(32, 32), otherClient.second.colour);*/
 	}
 
-	//Gizmos::draw(m_projectionMatrix * m_viewMatrix);
-
-	// done drawing sprites
+	// Done drawing sprites.
 	m_2dRenderer->end();
 }
 
-
+/**
+	Initializes the connection.
+*/
 void Client::initialiseClientConnection()
 {
-	// Create a socket descriptor to describe this connection
-	// No data needed, as we will be connection to a server
+	// Create a socket descriptor to describe this connection.
+	// No data needed, as we will be connection to a server.
 	RakNet::SocketDescriptor sd;
 
-	// Now call connect to attempt to connect to the given server
+	// Call connect to attempt to connect to the given server.
 	m_pPeerInterface->Startup(1, &sd, 1);
 
+	// Console output to display what the IP is for the clients to connect to.
 	std::cout << "Connecting to server at: " << IP << std::endl;
 
-	// Now call connect to attempt to connect to the given server
+	// Call connect to attempt to connect to the given server.
 	RakNet::ConnectionAttemptResult res = m_pPeerInterface->Connect(IP, PORT, nullptr, 0);
 
-	// Finally, check to see if we connected, and if not, throw an error
+	// Check to see if we connected, and if not, throw an error.
 	if (res != RakNet::CONNECTION_ATTEMPT_STARTED)
 	{
+		// Console output that it can't connect and display the error number.
 		std::cout << "Unable to start connection, Error number: " << res << std::endl;
 	}
 }
 
+/**
+	Handles incoming packets.
+*/
 void Client::handleNetworkConnection()
 {
-	//Initialize the Raknet peer interface first 
+	// Initialize the Raknet peer interface first. 
 	m_pPeerInterface = RakNet::RakPeerInterface::GetInstance();
+
+	// Initialize the connection to the server.
 	initialiseClientConnection();
 }
 
+/**
+	Handles incoming packets.
+*/
 void Client::handleNetworkMessages()
 {
+	// Create a RakNet packet.
 	RakNet::Packet* packet;
 
+	/**
+		Checks the packets and if it matches any of these cases,
+		console output these messages.
+	*/
 	for (packet = m_pPeerInterface->Receive(); packet;
 		m_pPeerInterface->DeallocatePacket(packet),
 		packet = m_pPeerInterface->Receive())
@@ -361,54 +391,83 @@ void Client::handleNetworkMessages()
 	}
 }
 
+/**
+	Sets the client ID to however many clients are connected + 1.
+
+	@param packet A pointer to a RakNet packet.
+*/
 void Client::onSetClientIDPacket(RakNet::Packet* packet)
 {
+	// Creates a new BitStream with the parsed in packet.
 	RakNet::BitStream bsIn(packet->data, packet->length, false);
+
+	// Ignore the message ID.
 	bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
+
+	// Checks the client ID to know what this client's ID is.
 	bsIn.Read(m_myClientID);
 
+	// Console output what my ID is.
 	std::cout << "Set my client ID to: " << m_myClientID << std::endl;
 }
 
-// send 3 floats in
-// instead of gameobject, use the three floats
+
+/**
+	Sends the Client's GameObject data across the network.
+*/
 void Client::sendClientGameObject()
 {
+	// Create a new Bitstream.
 	RakNet::BitStream bs;
+
+	// Write a message to identify what the packet is.
 	bs.Write((RakNet::MessageID)GameMessages::ID_CLIENT_CLIENT_DATA);
+
+	// Write this client's client ID.
 	bs.Write(m_myClientID);
+
+	// Write the client's GameObject
 	bs.Write((char*)&m_myGameObject, sizeof(GameObject));
-	/*bs.Write((char*)&posX, sizeof(float));
-	bs.Write((char*)&posY, sizeof(float));*/
 
-
+	// Send the packet to the server.
 	m_pPeerInterface->Send(&bs, HIGH_PRIORITY, RELIABLE_ORDERED,
 		0, RakNet::UNASSIGNED_SYSTEM_ADDRESS, true);
 }
 
+/**
+	Called when a data packet is recieved. If the client ID does not
+	match our ID, we need to update our client GameObject information.
+
+	@param packet A RakNet packet from the server.
+*/
 void Client::onReceivedClientDataPacket(RakNet::Packet * packet)
 {
+	// Create a new bitStream.
 	RakNet::BitStream bsIn(packet->data, packet->length, false);
 	bsIn.IgnoreBytes(sizeof(RakNet::MessageID));
 
+	// Create a new int for clientID.
 	int clientID;
+	// Read the client ID.
 	bsIn.Read(clientID);
 
-	//If the clientID does not match our ID, we need to update
-	//our client GameObject information.
+	/* If the clientID does not match our ID, we need to update
+	 our client GameObject information.*/
 	if (clientID != m_myClientID)
 	{
+		// Create a new GameObject.
 		GameObject clientData;
+
+		// Read the client data GameObject.
 		bsIn.Read((char*)&clientData, sizeof(GameObject));
 
+		/* Set the recieved GameObject in to the array of other clients
+			at the ID of the client.*/
 		m_otherClientGameObjects[clientID] = clientData;
 
-		//For now, just output the Game Object information to the
-		//console
+		// Output the Game Object information to the console.
 		std::cout << "Client " << clientID <<
 			" at: " << clientData.position.x <<
 			" " << clientData.position.z << std::endl;
 	}
 }
-
-//}

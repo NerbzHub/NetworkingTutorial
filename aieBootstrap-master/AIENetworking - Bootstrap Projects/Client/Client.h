@@ -82,15 +82,16 @@ public:
 	virtual void draw();
 
 	/**
+		Initializes the connection.
+	*/
+	void initialiseClientConnection();
+
+	/**
 		Gets an instance of RakPeerInterface and initializes the
 		RakNet peer interface first.
 	*/
 	void handleNetworkConnection();
 
-	/**
-		Initializes the connection.
-	*/
-	void initialiseClientConnection();
 
 	/**
 		Handles incoming packets.
