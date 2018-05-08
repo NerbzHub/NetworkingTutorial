@@ -10,6 +10,8 @@
 /**
 	Main calls the Client application and once the application is closed,
 	it deletes the application to deallcate the memory.
+
+	@return 0.
 */
 int main()
 {

@@ -15,7 +15,6 @@
 #include <fstream>
 #include "ServerLib\includes\Server.h"
 
-
 /**
 	Main runs the application.
 

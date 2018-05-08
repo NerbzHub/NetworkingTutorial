@@ -1,21 +1,41 @@
+/**
+	Server.cpp
+	Purpose: Server.lib is a library to interact with the RakNet library.
+			 It is designed to assist creating a server for multiplayer 2D
+			 games across LAN.
+
+	@author Nathan Nette
+*/
 #include "Server.h"
 
-
-
+/**
+	Default Constructor.
+*/
 Server::Server()
 {
-
 }
 
-
+/**
+	Default Deconstructor.
+*/
 Server::~Server()
 {
 }
 
+/**
+	Handles incoming packets from the network.
+
+	@param pPeerInterface A pointer to a RakPeerInterface.
+*/
 void Server::handleNetworkMessages(RakNet::RakPeerInterface * pPeerInterface)
 {
+	// Create a packet pointer and initialized to nullptr.
 	RakNet::Packet* packet = nullptr;
 
+	/**
+		While true, checks the packets and if it matches any of these cases,
+		console output these messages.
+	*/
 	while (true)
 	{
 		for (packet = pPeerInterface->Receive(); packet;
@@ -51,6 +71,12 @@ void Server::handleNetworkMessages(RakNet::RakPeerInterface * pPeerInterface)
 	}
 }
 
+/**
+	Sends a new client ID
+
+	@param1 pPeerInterface A pointer to a RakPeerInterface
+	@param2 address The IP Address of the network.
+*/
 void Server::sendNewClientID(RakNet::RakPeerInterface * pPeerInterface, RakNet::SystemAddress & address)
 {
 	
@@ -64,6 +90,11 @@ void Server::sendNewClientID(RakNet::RakPeerInterface * pPeerInterface, RakNet::
 
 }
 
+/**
+	Returns the IPv4 address of the network this pc is running on.
+
+	@return line Line is a string storing the IPv4 address of this network.
+*/
 std::string Server::getIPAddress()
 {
 	std::string line;
@@ -88,9 +119,15 @@ std::string Server::getIPAddress()
 			}
 		}
 	}
+
 	return line;
 }
 
+/**
+	Pings the client.
+
+	@param pPeerInterface A RakPeerInterface pointer.
+*/
 void Server::sendClientPing(RakNet::RakPeerInterface * pPeerInterface)
 {
 	while (true)
